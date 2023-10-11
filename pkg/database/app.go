@@ -1,26 +1,29 @@
 package database
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
-func (m *Manager) InsertPDFSummary(s PDFSummary) error {
-	intSummaryJSON, err := json.Marshal(s.IntermediateSummary)
-	if err != nil {
-		return fmt.Errorf("could not marshal intermediate summary: %v", err)
-	}
-
-	_, err = m.db.Exec(
+func (m *Manager) InsertPDFSummary(s PDFSummary) (int64, error) {
+	result, err := m.db.Exec(
 		"INSERT INTO pdf_summary (file, summary, title, intermediate_summary) VALUES ($1, $2, $3, $4)",
 		s.File,
 		s.Summary,
 		s.Title,
-		string(intSummaryJSON),
+		s.IntermediateSummary,
 	)
 	if err != nil {
-		return fmt.Errorf("could not insert pdf summary: %v", err)
+		return -1, fmt.Errorf("could not insert pdf summary: %v", err)
 	}
 
-	return nil
+	return result.LastInsertId()
+}
+
+func (m *Manager) GetPDFSummaries() ([]PDFSummary, error) {
+	var summaries []PDFSummary
+	if err := m.db.Select(&summaries, "SELECT * FROM pdf_summary"); err != nil {
+		return nil, fmt.Errorf("could not select pdf summaries: %v", err)
+	}
+
+	return summaries, nil
 }
