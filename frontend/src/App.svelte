@@ -6,6 +6,7 @@
   import ViewDoc from "./lib/view_doc.svelte";
   import "@fontsource/inter";
   import Nav from "./routes/Nav.svelte";
+  import { SvelteToast } from '@zerodevx/svelte-toast'
 
   export let url = "";
 </script>
@@ -21,6 +22,8 @@
       <Route><NotFound /></Route>
     </div>
   </Router>
+
+  <SvelteToast/>
 </div>
 
 <style>

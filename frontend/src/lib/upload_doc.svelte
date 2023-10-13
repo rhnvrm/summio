@@ -1,4 +1,6 @@
 <script lang="ts">
+    import {success, warning, failure} from "./toast"
+
     let files: { name: any }[];
     let inProgress = false;
 
@@ -13,9 +15,19 @@
             .then((response) => response.json())
             .then((result) => {
                 console.log("Success:", result);
+                if (result.status == "success") {
+                    success("File uploaded successfully")
+                    // wair for 2 seconds then redirect to the new doc
+                    setTimeout(() => {
+                        window.location.href = "/docs/" + result.data.id
+                    }, 2000)
+                } else {
+                    failure("Error uploading file: " + result.message)
+                }
             })
             .catch((error) => {
                 console.error("Error:", error);
+                failure("Error uploading file: " + error)
             });
         inProgress = false;
     }
@@ -29,5 +41,4 @@
 </div>
 
 <style>
-
 </style>
