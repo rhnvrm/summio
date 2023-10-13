@@ -1,5 +1,6 @@
 <script lang="ts">
     import {success, warning, failure} from "./toast"
+    import pulse from "../assets/pulse.svg";
 
     let files: { name: any }[];
     let inProgress = false;
@@ -35,10 +36,20 @@
 
 <div class="uploader box">
     <h1>Upload</h1>
+    <div class="form">
     <input name="file" id="file" type="file" bind:files />
 
     <button disabled={inProgress} on:click={upload}>Submit</button>
+
+    {#if inProgress}
+    <img alt="loading" src={pulse} />   
+    {/if}
+    </div>
 </div>
 
 <style>
+    .form {
+        display: flex;
+        flex-direction: row;
+    }
 </style>
