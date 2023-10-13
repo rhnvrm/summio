@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/labstack/echo/v4"
@@ -34,7 +35,17 @@ func genRandomString(size int) string {
 	for i := 0; i < size; i++ {
 		b.WriteByte(chars[rand.Intn(len(chars))])
 	}
+
+	// add timestamp to make it unique.
+	t := time.Now().Unix()
+	b.WriteString(fmt.Sprintf("-%d", t))
+
 	return b.String()
+}
+
+type Envelope struct {
+	Status string      `json:"status"`
+	Data   interface{} `json:"data"`
 }
 
 func main() {
@@ -51,13 +62,24 @@ func main() {
 
 	e := echo.New()
 	e.Debug = debugMode
+	e.Static("/api/static/docs/", filesPath)
 	e.GET("/api/pdf", func(c echo.Context) error {
 		summaries, err := db.GetPDFSummaries()
 		if err != nil {
 			return fmt.Errorf("could not get pdf summaries: %w", err)
 		}
 
-		return c.JSON(200, summaries)
+		return c.JSON(200, newSuccessEnvelope(summaries))
+	})
+	e.GET("/api/pdf/:id", func(c echo.Context) error {
+		id := c.Param("id")
+
+		summary, err := db.GetPDFSummary(id)
+		if err != nil {
+			return fmt.Errorf("could not get pdf summary: %w", err)
+		}
+
+		return c.JSON(200, newSuccessEnvelope(summary))
 	})
 	e.POST("/api/pdf", func(c echo.Context) error {
 		file, err := c.FormFile("file")
@@ -128,8 +150,15 @@ func main() {
 
 		dbSummary.ID = id
 
-		return c.JSON(200, dbSummary)
+		return c.JSON(200, newSuccessEnvelope(dbSummary))
 	})
 
 	e.Logger.Fatal(e.Start(":1323"))
+}
+
+func newSuccessEnvelope(data interface{}) Envelope {
+	return Envelope{
+		Status: "success",
+		Data:   data,
+	}
 }

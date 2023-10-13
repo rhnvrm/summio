@@ -100,7 +100,7 @@ func (s *Summarizer) MakeSummaryChain() (chains.MapReduceDocuments, error) {
 	))
 
 	out := chains.NewMapReduceDocuments(mapChain, combineChain)
-	out.MaxNumberOfConcurrent = 10
+	out.MaxNumberOfConcurrent = 5
 	out.ReturnIntermediateSteps = true
 
 	return out, nil

@@ -27,3 +27,12 @@ func (m *Manager) GetPDFSummaries() ([]PDFSummary, error) {
 
 	return summaries, nil
 }
+
+func (m *Manager) GetPDFSummary(id string) (PDFSummary, error) {
+	var summary PDFSummary
+	if err := m.db.Get(&summary, "SELECT * FROM pdf_summary WHERE id = $1", id); err != nil {
+		return PDFSummary{}, fmt.Errorf("could not select pdf summary: %v", err)
+	}
+
+	return summary, nil
+}
