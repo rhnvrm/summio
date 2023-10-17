@@ -1,4 +1,4 @@
-package main
+package migration
 
 import (
 	"embed"
@@ -16,7 +16,7 @@ import (
 //go:embed *.sql
 var migrationsFS embed.FS
 
-func main() {
+func RunMigration() {
 	dbPath := os.Getenv("DB_PATH")
 	if dbPath == "" {
 		log.Fatal("DB_PATH not set")
