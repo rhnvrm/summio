@@ -4,7 +4,6 @@ import (
 	"embed"
 	"fmt"
 	"log"
-	"os"
 	"sort"
 	"strings"
 
@@ -16,12 +15,7 @@ import (
 //go:embed *.sql
 var migrationsFS embed.FS
 
-func RunMigration() {
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		log.Fatal("DB_PATH not set")
-	}
-
+func RunMigration(dbPath string) {
 	db, err := database.InitDB(dbPath)
 	if err != nil {
 		log.Fatalf("could not init db: %v", err)
@@ -54,7 +48,6 @@ func RunMigration() {
 			log.Fatalf("could not execute migration: %v", err)
 		}
 	}
-
 }
 
 type MigrationManager struct {

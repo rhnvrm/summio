@@ -51,7 +51,7 @@ func main() {
 		_         = mustGetEnv("OPENAI_API_KEY")
 	)
 
-	migration.RunMigration()
+	migration.RunMigration(dbPath)
 
 	db, err := database.InitDB(dbPath)
 	if err != nil {
