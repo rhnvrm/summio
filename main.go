@@ -74,6 +74,16 @@ func main() {
 	e.Static("/api/static/docs/", filesPath)
 
 	e.GET("/api/pdf", func(c echo.Context) error {
+		if q := c.QueryParam("q"); q != "" {
+			summaries, err := db.SearchPDFSummaries(q)
+			if err != nil {
+				debug(fmt.Errorf("could not search pdf summaries: %w", err))
+				return echo.NewHTTPError(http.StatusInternalServerError, "Could not search PDF summaries")
+			}
+
+			return c.JSON(200, newSuccessEnvelope(summaries))
+		}
+
 		summaries, err := db.GetPDFSummaries()
 		if err != nil {
 			debug(fmt.Errorf("could not get pdf summaries: %w", err))

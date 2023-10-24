@@ -19,9 +19,18 @@ func (m *Manager) InsertPDFSummary(s PDFSummary) (int64, error) {
 	return result.LastInsertId()
 }
 
+func (m *Manager) SearchPDFSummaries(q string) ([]PDFSummary, error) {
+	var summaries []PDFSummary
+	if err := m.db.Select(&summaries, "SELECT * FROM pdf_summary WHERE title LIKE $1 or summary LIKE $1", "%"+q+"%"); err != nil {
+		return nil, fmt.Errorf("could not select pdf summaries: %v", err)
+	}
+
+	return summaries, nil
+}
+
 func (m *Manager) GetPDFSummaries() ([]PDFSummary, error) {
 	var summaries []PDFSummary
-	if err := m.db.Select(&summaries, "SELECT * FROM pdf_summary"); err != nil {
+	if err := m.db.Select(&summaries, "SELECT * FROM pdf_summary limit 5"); err != nil {
 		return nil, fmt.Errorf("could not select pdf summaries: %v", err)
 	}
 

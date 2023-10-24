@@ -14,7 +14,7 @@
 </script>
 
 <div class="list_docs box">
-    <h1>Docs</h1>
+    <h1>Recent Docs</h1>
     {#if docs === null || docs.length === 0}
         <p>No docs found</p>
     {:else}
